@@ -40,6 +40,9 @@ yarn-error.log*
 .env
 .env*.local
 
+# local db files
+*.sqlite
+
 # vercel
 .vercel
 
