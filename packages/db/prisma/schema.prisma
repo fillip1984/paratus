@@ -16,6 +16,13 @@ model Post {
     content String
 }
 
+model Task {
+    id       String @id @default(cuid())
+    title    String
+    content  String
+    duration Int
+}
+
 // NextAuth.js Models
 // NOTE: When using postgresql, mysql or sqlserver, 
 // uncomment the @db.Text annotations below
