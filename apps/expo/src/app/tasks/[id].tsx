@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pressable, SafeAreaView, Text, Vibration, View } from "react-native";
 import { Stack, useGlobalSearchParams } from "expo-router";
 
@@ -15,7 +15,7 @@ export default function Task() {
   const { data } = api.task.byId.useQuery({ id });
 
   // The state for our timer
-  const [timer, setTimer] = useState("00:00:00");
+  const [timer, setTimer] = useState("");
   const [timerRunning, setTimerRunning] = useState(false);
 
   const PATTERN = [500, 500, 500];
@@ -33,7 +33,7 @@ export default function Task() {
     };
   };
 
-  const startTimer = (e: Date) => {
+  const updateTimer = (e: Date) => {
     const { total, hours, minutes, seconds } = getTimeRemaining(e);
     if (total >= 0) {
       // update the timer
@@ -52,23 +52,7 @@ export default function Task() {
     }
   };
 
-  const clearTimer = (e: Date) => {
-    // If you adjust it you should also need to
-    // adjust the Endtime formula we are about
-    // to code next
-    setTimer("00:00:00");
-
-    // If you try to remove this line the
-    // updating of timer Variable will be
-    // after 1000ms or 1sec
-    if (ref.current) clearInterval(ref.current);
-    const id = setInterval(() => {
-      startTimer(e);
-    }, 1000);
-    ref.current = id;
-  };
-
-  const getDeadTime = (minutes: number) => {
+  const getDeadline = (minutes: number) => {
     const deadline = new Date();
 
     // This is where you need to adjust if
@@ -85,25 +69,50 @@ export default function Task() {
   const start = (duration: number) => {
     Vibration.cancel();
     setTimerRunning(true);
-    clearTimer(getDeadTime(duration));
+    const deadline = getDeadline(duration);
+    if (ref.current) clearInterval(ref.current);
+    const { hours, minutes, seconds } = getTimeRemaining(deadline);
+    setTimer(
+      (hours > 9 ? hours : "0" + hours) +
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds),
+    );
+    const id = setInterval(() => updateTimer(deadline), 1000);
+    ref.current = id;
   };
 
-  const stop = () => {
+  const stop = (duration: number) => {
     Vibration.cancel();
     setTimerRunning(false);
     if (ref.current) clearInterval(ref.current);
-    setTimer("00:00:00");
+    const { hours, minutes, seconds } = getTimeRemaining(getDeadline(duration));
+    setTimer(
+      (hours > 9 ? hours : "0" + hours) +
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds),
+    );
   };
 
-  // Another way to call the clearTimer() to start
-  // the countdown is via action event from the
-  // button first we create function to be called
-  // by the button
-  const onClickReset = (duration: number) => {
-    Vibration.cancel();
-    setTimerRunning(true);
-    clearTimer(getDeadTime(duration));
+  const reset = (duration: number) => {
+    start(duration);
   };
+
+  useEffect(() => {
+    // initial setting of timer counter
+    if (data) {
+      stop(data.duration);
+    }
+
+    // clean up interval and alarm on navigation away
+    return () => {
+      Vibration.cancel();
+      if (ref.current) clearInterval(ref.current);
+    };
+  }, [data]);
 
   if (!data) {
     return (
@@ -132,7 +141,7 @@ export default function Task() {
           {!timerRunning && (
             <Pressable
               onPress={() => start(data.duration)}
-              className="flex items-center rounded bg-secondary p-2">
+              className="flex items-center rounded bg-primary p-2">
               <Text className="text-3xl text-white">Start timer</Text>
               <Text className="text-xl text-white">
                 {data.duration} minutes
@@ -141,16 +150,18 @@ export default function Task() {
           )}
           {timerRunning && (
             <Pressable
-              onPress={() => onClickReset(data.duration)}
+              onPress={() => reset(data.duration)}
               className="flex items-center rounded bg-primary p-2">
               <Text className="text-3xl text-white">Reset</Text>
             </Pressable>
           )}
           {timerRunning && (
             <Pressable
-              onPress={stop}
+              onPress={() => stop(data.duration)}
               className="flex items-center rounded bg-secondary p-2">
-              <Text className="text-3xl text-white">Cancel</Text>
+              <Text className="text-3xl text-white">
+                {timer === "00:00:00" ? "Dismiss" : "Cancel"}
+              </Text>
             </Pressable>
           )}
         </View>
