@@ -44,7 +44,7 @@ const AddSection = ({ collectionId }: { collectionId: string }) => {
     addSection({ name: sectionName, collectionId });
   };
   return (
-    <div className="mx-8 flex h-fit min-w-[300px] rounded border">
+    <div className="mx-8 flex h-fit min-w-[300px] snap-center rounded border">
       <input
         type="text"
         value={sectionName}

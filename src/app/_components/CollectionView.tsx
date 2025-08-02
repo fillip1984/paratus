@@ -16,7 +16,7 @@ export default function CollectionView({
   const [selectedView, setSelectedView] = useState<"kanban" | "list">("kanban");
 
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div className="flex flex-1 flex-col overflow-hidden">
       {/* heading */}
       <div className="flex items-center justify-between p-2">
         <h4>{collection.name}</h4>
