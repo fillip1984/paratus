@@ -1,57 +1,62 @@
-import { useEffect, useRef, useState } from 'react'
+import {
+  autoUpdate,
+  flip,
+  FloatingFocusManager,
+  offset,
+  shift,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+  useRole,
+} from "@floating-ui/react";
+import { useState } from "react";
 
-// More ideas: https://www.youtube.com/watch?v=q6HevBxsPUM
+/* Build ontop of PopperJS, now Floating-ui, See: https://floating-ui.com/docs/popover */
 export default function PopupMenu({
   button,
   content,
 }: {
-  button: React.ReactNode
-  content: React.ReactNode
+  button: React.ReactNode;
+  content: React.ReactNode;
 }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const { refs, floatingStyles, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    placement: "bottom-start",
+    middleware: [offset(10), flip(), shift()],
+    whileElementsMounted: autoUpdate,
+  });
 
-  // dismiss menu when user clicks outside
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context);
 
-    document.addEventListener('click', handleClick)
-
-    return () => {
-      document.removeEventListener('click', handleClick)
-    }
-  }, [dropdownRef])
+  // Merge all the interactions into prop getters
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+    role,
+  ]);
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div
-        onClick={(e) => {
-          e.stopPropagation()
-          e.preventDefault()
-          setIsOpen((prev) => !prev)
-        }}
-        className="cursor-pointer">
+    <>
+      <div ref={refs.setReference} {...getReferenceProps()}>
         {button}
       </div>
 
       {isOpen && (
-        <div
-          className="bg-foreground absolute left-0 z-[1000] rounded-lg"
-          onClick={(e) => {
-            e.stopPropagation()
-            e.preventDefault()
-            setIsOpen(false)
-          }}>
-          {content}
-        </div>
+        <FloatingFocusManager context={context} modal={true}>
+          <div
+            ref={refs.setFloating}
+            style={floatingStyles}
+            {...getFloatingProps()}
+          >
+            {content}
+          </div>
+        </FloatingFocusManager>
       )}
-    </div>
-  )
+    </>
+  );
 }

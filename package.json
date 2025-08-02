@@ -20,6 +20,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@floating-ui/react": "^0.27.15",
 		"@formkit/drag-and-drop": "^0.5.3",
 		"@prisma/client": "^6.13.0",
 		"@t3-oss/env-nextjs": "^0.12.0",
