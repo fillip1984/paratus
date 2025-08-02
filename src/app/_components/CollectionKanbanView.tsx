@@ -9,14 +9,12 @@ export default function CollectionKanbanView({
   collection: CollectionDetailType;
 }) {
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto p-2">
-          {collection.sections.map((section) => (
-            <Section key={section.id} section={section} />
-          ))}
-          <AddSection collectionId={collection.id} />
-        </div>
+    <div className="flex flex-1 overflow-hidden">
+      <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto p-2">
+        {collection.sections.map((section) => (
+          <Section key={section.id} section={section} />
+        ))}
+        <AddSection collectionId={collection.id} />
       </div>
     </div>
   );

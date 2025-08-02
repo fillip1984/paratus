@@ -13,7 +13,7 @@ export default function CollectionView({
 }: {
   collection: CollectionDetailType;
 }) {
-  const [selectedView, setSelectedView] = useState<"kanban" | "list">("kanban");
+  const [selectedView, setSelectedView] = useState<"kanban" | "list">("list");
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -54,7 +54,7 @@ export default function CollectionView({
         />
       </div>
 
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-hidden">
         {selectedView === "kanban" && (
           <CollectionKanbanView collection={collection} />
         )}

@@ -11,17 +11,15 @@ export default function CollectionListView({
   collection: CollectionDetailType;
 }) {
   return (
-    <div className="bg-success m-8 flex flex-1 flex-col">
-      <div className="bg-danger flex flex-1 overflow-hidden">
-        <div className="bg-warning flex flex-1 flex-col gap-2 overflow-auto p-2">
-          {collection.sections.map((section) => (
-            <Section key={section.id} section={section} />
-          ))}
-          <AddSection
-            collectionId={collection.id}
-            collectionName={collection.name}
-          />
-        </div>
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 snap-y snap-mandatory flex-col gap-2 overflow-auto p-2 pb-12">
+        {collection.sections.map((section) => (
+          <Section key={section.id} section={section} />
+        ))}
+        <AddSection
+          collectionId={collection.id}
+          collectionName={collection.name}
+        />
       </div>
     </div>
   );
@@ -29,7 +27,7 @@ export default function CollectionListView({
 
 const Section = ({ section }: { section: SectionDetailType }) => {
   return (
-    <div className="min-w-[400px] snap-center rounded border p-2">
+    <div className="min-h-[200px] snap-start rounded border p-2">
       <p className="font-bold">{section.name}</p>
       {/* Add tasks or other content here */}
     </div>
