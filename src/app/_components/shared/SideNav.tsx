@@ -10,10 +10,11 @@ import {
   FaPlus,
   FaX,
 } from "react-icons/fa6";
-import Modal from "./ui/modal";
+
 import Link from "next/link";
 import { api } from "~/trpc/react";
 import { usePathname } from "next/navigation";
+import Modal from "../ui/modal";
 
 export default function SideNav() {
   const path = usePathname();

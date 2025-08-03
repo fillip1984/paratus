@@ -6,48 +6,48 @@ import {
 } from "../trpc";
 
 export const collectionRouter = createTRPCRouter({
-  // readAll: publicProcedure.query(async ({ ctx }) => {
-  // 	const collections = await ctx.db.collection.findMany({
-  // 		select: {
-  // 			id: true,
-  // 			name: true,
-  // 			position: true,
-  // 			// parentId: true,
-  // 			// children: {
-  // 			//   select: {
-  // 			//     id: true,
-  // 			//     name: true,
-  // 			//     parentId: true,
-  // 			//   },
-  // 			// },
-  // 			sections: {
-  // 				select: {
-  // 					id: true,
-  // 					name: true,
-  // 					position: true,
-  // 					tasks: {
-  // 						select: {
-  // 							text: true,
-  // 						},
-  // 						where: { complete: { not: true }, parentId: null },
-  // 					},
-  // 				},
-  // 			},
-  // 		},
-  // 		orderBy: {
-  // 			position: "asc",
-  // 		},
-  // 	});
-  // 	// another idea to sum: collection.sections.map((s) => s.tasks).flat(1).length}
-  // 	return collections.map((collection) => {
-  // 		return {
-  // 			...collection,
-  // 			taskCount: collection.sections
-  // 				.map((s) => s.tasks.length)
-  // 				.reduce((a, b) => a + b, 0),
-  // 		};
-  // 	});
-  // }),
+  readAll: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.collection.findMany({
+      select: {
+        id: true,
+        name: true,
+        position: true,
+        // parentId: true,
+        // children: {
+        //   select: {
+        //     id: true,
+        //     name: true,
+        //     parentId: true,
+        //   },
+        // },
+        sections: {
+          select: {
+            id: true,
+            name: true,
+            position: true,
+            // tasks: {
+            // 	select: {
+            // 		text: true,
+            // 	},
+            // 	where: { complete: { not: true }, parentId: null },
+            // },
+          },
+        },
+      },
+      orderBy: {
+        position: "asc",
+      },
+    });
+    // another idea to sum: collection.sections.map((s) => s.tasks).flat(1).length}
+    // return collections.map((collection) => {
+    // 	return {
+    // 		...collection,
+    // 		taskCount: collection.sections
+    // 			.map((s) => s.tasks.length)
+    // 			.reduce((a, b) => a + b, 0),
+    // 	};
+    // });
+  }),
   readOne: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
@@ -161,6 +161,7 @@ async function fetchCollection(id: string, ctx: trpcContextShape) {
           id: true,
           name: true,
           position: true,
+          collectionId: true,
           _count: {
             select: {
               tasks: { where: { complete: { not: true }, parentId: null } },

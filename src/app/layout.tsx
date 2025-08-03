@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
-import SideNav from "./_components/SideNav";
+import SideNav from "./_components/shared/SideNav";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
