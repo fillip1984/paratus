@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { api } from "~/trpc/react";
-import CollectionView from "../_components/CollectionView";
+import CollectionView from "../_components/collection/CollectionView";
 import LoadOrRetry from "../_components/LoadOrRetry";
 import { notFound } from "next/navigation";
 import { use } from "react";

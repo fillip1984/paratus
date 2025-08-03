@@ -1,48 +1,14 @@
-"use client";
-
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus } from "react-icons/fa";
 import { api } from "~/trpc/react";
-import type { CollectionDetailType, SectionDetailType } from "~/trpc/types";
 
-export default function CollectionListView({
-  collection,
-}: {
-  collection: CollectionDetailType;
-}) {
-  return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="snap-y snap-mandatory overflow-y-auto p-2 pb-12">
-        <div className="flex w-full max-w-[800px] flex-col gap-2 lg:mx-auto">
-          {collection.sections.map((section) => (
-            <Section key={section.id} section={section} />
-          ))}
-          <AddSection
-            collectionId={collection.id}
-            collectionName={collection.name}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const Section = ({ section }: { section: SectionDetailType }) => {
-  return (
-    <div className="min-h-[200px] snap-start rounded border p-2">
-      <p className="font-bold">{section.name}</p>
-      {/* Add tasks or other content here */}
-    </div>
-  );
-};
-
-const AddSection = ({
+export default function AddSectionCard({
   collectionId,
   collectionName,
 }: {
   collectionId: string;
   collectionName: string;
-}) => {
+}) {
   const [sectionName, setSectionName] = useState("");
   const trpc = api.useUtils();
   const { mutate: addSection } = api.section.create.useMutation({
@@ -73,4 +39,4 @@ const AddSection = ({
       </button>
     </div>
   );
-};
+}
