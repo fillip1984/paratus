@@ -4,18 +4,14 @@ import { api } from "~/trpc/react";
 
 export default function AddSectionCard({
   collectionId,
-  collectionName,
 }: {
   collectionId: string;
-  collectionName: string;
 }) {
   const [sectionName, setSectionName] = useState("");
   const trpc = api.useUtils();
   const { mutate: addSection } = api.section.create.useMutation({
     onSuccess: () => {
-      console.log("invalidate collection", collectionId, collectionName);
-      void trpc.collection.readOne.invalidate({ id: collectionId });
-      void trpc.collection.readOne.invalidate({ id: collectionName });
+      void trpc.collection.invalidate();
       setSectionName("");
     },
   });

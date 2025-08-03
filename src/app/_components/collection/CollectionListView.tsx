@@ -16,10 +16,7 @@ export default function CollectionListView({
           {collection.sections.map((section) => (
             <SectionCard key={section.id} section={section} />
           ))}
-          <AddSectionCard
-            collectionId={collection.id}
-            collectionName={collection.name}
-          />
+          <AddSectionCard collectionId={collection.id} />
         </div>
       </div>
     </div>
