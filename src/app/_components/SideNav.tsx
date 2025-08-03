@@ -51,7 +51,7 @@ export default function SideNav() {
   ];
   return (
     <>
-      <nav className="bg-foreground m-2 flex min-w-[250px] flex-col gap-1 rounded-xl py-2 transition duration-150">
+      <nav className="bg-foreground m-2 flex min-w-[250px] flex-col gap-2 rounded-xl py-2 transition duration-150">
         {navItems.map((item) => (
           <Link
             key={item.to}
