@@ -13,8 +13,10 @@ import {
 import Modal from "./ui/modal";
 import Link from "next/link";
 import { api } from "~/trpc/react";
+import { usePathname } from "next/navigation";
 
 export default function SideNav() {
+  const path = usePathname();
   // const trpc = api.useUtils();
   // const { data: inbox } = useQuery(trpc.collection.inbox.queryOptions());
   // const { data: today } = useQuery(trpc.task.today.queryOptions());
@@ -54,7 +56,7 @@ export default function SideNav() {
           <Link
             key={item.to}
             href={item.to}
-            className={`[&.active]:text-primary [&.active]:bg-background hover:bg-background/60 mx-2 flex items-center rounded-xl p-2 transition duration-200 select-none`}
+            className={` ${path.startsWith(item.to) ? "bg-primary font-semibold" : "hover:bg-background/60"} mx-2 flex items-center rounded-xl p-2 transition duration-200 select-none`}
           >
             <item.icon className="mr-2" />
             {item.label}
