@@ -7,6 +7,7 @@ import { isPermanentSection } from "~/utils/section";
 import AddTaskCard from "./task/AddTaskCard";
 import { useState } from "react";
 import { startOfDay } from "date-fns";
+import TaskCard from "./task/TaskCard";
 
 export default function SectionCard({
   section,
@@ -53,10 +54,11 @@ export default function SectionCard({
       {/* Add tasks or other content here */}
       <>
         {section.tasks.map((task) => (
-          <div key={task.id} className="my-2">
-            <p className="text-sm">{task.text}</p>
-            {/* Render other task details here */}
-          </div>
+          <TaskCard
+            key={task.id}
+            task={task}
+            collectionId={section.collectionId}
+          />
         ))}
       </>
       <>

@@ -60,10 +60,10 @@ export const collectionRouter = createTRPCRouter({
         return await fetchCollection(input.id, ctx);
       }
     }),
-  inbox: publicProcedure.query(async ({ ctx }) => {
-    const inboxId = (await findOrCreateInbox(ctx)).id;
-    return await fetchCollection(inboxId, ctx);
-  }),
+  // inbox: publicProcedure.query(async ({ ctx }) => {
+  //   const inboxId = (await findOrCreateInbox(ctx)).id;
+  //   return await fetchCollection(inboxId, ctx);
+  // }),
   create: publicProcedure
     .input(
       z.object({
@@ -144,6 +144,10 @@ export const collectionRouter = createTRPCRouter({
         }
       });
     }),
+  inboxId: publicProcedure.query(async ({ ctx }) => {
+    const inbox = await findOrCreateInbox(ctx);
+    return inbox.id;
+  }),
 });
 
 async function fetchCollection(id: string, ctx: trpcContextShape) {
@@ -188,7 +192,7 @@ async function fetchCollection(id: string, ctx: trpcContextShape) {
                 },
               },
             },
-            where: { complete: { not: true } },
+            where: { complete: false },
           },
         },
       },

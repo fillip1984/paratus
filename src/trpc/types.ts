@@ -11,3 +11,4 @@ export type CollectionDetailType = NonNullable<
   RouterOutputs["collection"]["readOne"]
 >;
 export type SectionDetailType = CollectionDetailType["sections"][number];
+export type TaskDetailType = SectionDetailType["tasks"][number];
