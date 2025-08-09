@@ -1,5 +1,4 @@
 import type { CollectionDetailType } from "~/trpc/types";
-import AddSectionCard from "./section/AddSectionCard";
 import SectionCard from "./section/SectionCard";
 
 export default function CollectionKanbanView({
@@ -13,7 +12,6 @@ export default function CollectionKanbanView({
         {collection.sections.map((section) => (
           <SectionCard key={section.id} section={section} />
         ))}
-        <AddSectionCard collectionId={collection.id} />
       </div>
     </div>
   );

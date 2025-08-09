@@ -12,25 +12,24 @@ export const collectionRouter = createTRPCRouter({
         id: true,
         name: true,
         position: true,
-        // parentId: true,
-        // children: {
-        //   select: {
-        //     id: true,
-        //     name: true,
-        //     parentId: true,
-        //   },
-        // },
+        parentId: true,
+        children: {
+          select: {
+            id: true,
+            name: true,
+            parentId: true,
+          },
+        },
         sections: {
           select: {
             id: true,
             name: true,
             position: true,
-            // tasks: {
-            // 	select: {
-            // 		text: true,
-            // 	},
-            // 	where: { complete: { not: true }, parentId: null },
-            // },
+            _count: {
+              select: {
+                tasks: { where: { complete: { not: true } } },
+              },
+            },
           },
         },
       },
@@ -58,6 +57,8 @@ export const collectionRouter = createTRPCRouter({
         return await fetchCollection(input.id, ctx);
       } else if (input.id === "upcoming") {
         return await fetchCollection(input.id, ctx);
+      } else {
+        return fetchCollection(input.id, ctx);
       }
     }),
   // inbox: publicProcedure.query(async ({ ctx }) => {

@@ -1,8 +1,6 @@
 "use client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
 import {
   FaCalendarDay,
   FaCalendarWeek,
@@ -12,15 +10,29 @@ import {
 } from "react-icons/fa6";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
-import { usePathname } from "next/navigation";
 import Modal from "../ui/modal";
+import type { CollectionSummaryType } from "~/trpc/types";
 
 export default function SideNav() {
   const path = usePathname();
-  // const trpc = api.useUtils();
-  // const { data: inbox } = useQuery(trpc.collection.inbox.queryOptions());
-  // const { data: today } = useQuery(trpc.task.today.queryOptions());
+  const { data: collections } = api.collection.readAll.useQuery();
+  const { data: today } = api.task.today.useQuery();
+
+  const [inboxCollection, setInboxCollection] = useState<
+    CollectionSummaryType | undefined
+  >();
+  const [isAddCollectionOpen, setIsAddCollectionOpen] = useState(false);
+  useEffect(() => {
+    const possibleInboxCollection = collections?.find(
+      (c) => c.name === "Inbox",
+    );
+    if (possibleInboxCollection) {
+      console.log(possibleInboxCollection);
+      setInboxCollection(possibleInboxCollection);
+    }
+  }, [collections]);
 
   const navItems = [
     // {
@@ -34,7 +46,10 @@ export default function SideNav() {
       icon: FaInbox,
       count: (
         <span className="ml-auto text-xs text-gray-300">
-          {/* {inbox?.taskCount && inbox.taskCount > 0 ? inbox.taskCount : ""} */}
+          {inboxCollection?.sections.reduce(
+            (acc, section) => acc + section._count.tasks,
+            0,
+          )}
         </span>
       ),
     },
@@ -43,8 +58,8 @@ export default function SideNav() {
       label: "Today",
       icon: FaCalendarDay,
       count: (
-        <span className="ml-auto text-xs text-gray-300">
-          {/* {today?.length && today.length > 0 ? today.length : ""} */}
+        <span className="text-gray ml-auto text-xs">
+          {today?.length && today.length > 0 ? today.length : ""}
         </span>
       ),
     },
@@ -61,41 +76,46 @@ export default function SideNav() {
           >
             <item.icon className="mr-2" />
             {item.label}
-            {/* {item.count} */}
+            {item.count}
           </Link>
         ))}
 
         <div className="flex items-center justify-between px-2">
           <h4>Collections</h4>
-          {/* <button
-						onClick={() => setIsAddCollectionOpen(true)}
-						className="text-primary"
-					>
-						<FaPlus />
-					</button> */}
+          <button
+            onClick={() => setIsAddCollectionOpen(true)}
+            className="text-primary"
+          >
+            <FaPlus />
+          </button>
         </div>
-        {/* <div ref={parentRef} className="flex flex-col gap-1 px-3 text-sm">
-					{draggableCollections.map((collection) => (
-						<Link
-							to="/collections/$collectionId"
-							params={{ collectionId: collection.id }}
-							key={collection.id}
-							data-label={collection.id}
-							className={`[&.active]:text-primary [&.active]:bg-background hover:bg-background/60 mx-2 flex items-center justify-between rounded-xl p-2 transition duration-200 select-none`}
-						>
-							<span># {collection.name}</span>
-							<span className="text-xs text-gray-300">
-								{collection.taskCount > 0 && collection.taskCount}
-							</span>
-						</Link>
-					))}
-				</div> */}
+        <div className="flex flex-col gap-1 px-3 text-sm">
+          {collections
+            ?.filter((collection) => collection.name !== "Inbox")
+            .map((collection) => (
+              <Link
+                href={`/${collection.id}`}
+                key={collection.id}
+                data-label={collection.id}
+                className={`[&.active]:text-primary [&.active]:bg-background hover:bg-background/60 mx-2 flex items-center justify-between rounded-xl p-2 transition duration-200 select-none`}
+              >
+                <span># {collection.name}</span>
+                <span className="text-xs text-gray-300">
+                  {collection.sections.reduce(
+                    (acc, section) => acc + section._count.tasks,
+                    0,
+                  )}
+                  {/* {collection.taskCount > 0 && collection.taskCount} */}
+                </span>
+              </Link>
+            ))}
+        </div>
       </nav>
 
-      {/* <AddCollectionModal
-				isOpen={isAddCollectionOpen}
-				close={() => setIsAddCollectionOpen(false)}
-			/> */}
+      <AddCollectionModal
+        isOpen={isAddCollectionOpen}
+        close={() => setIsAddCollectionOpen(false)}
+      />
     </>
   );
 }
@@ -108,42 +128,41 @@ const AddCollectionModal = ({
   close: () => void;
 }) => {
   const [name, setName] = useState("");
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [isValid, setIsValid] = useState(false);
   useEffect(() => {
     setIsValid(name.trim() !== "");
   }, [name]);
 
-  // const navigate = useNavigate();
-  // const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  // const { mutate: createCollection } = useMutation(
-  // 	trpc.collection.create.mutationOptions({
-  // 		onSuccess: async (data) => {
-  // 			await queryClient.invalidateQueries({
-  // 				queryKey: trpc.collection.readAll.queryKey(),
-  // 			});
-  // 			close();
-  // 			setName("");
-  // 			navigate({
-  // 				to: "/collections/$collectionId",
-  // 				params: { collectionId: data.id },
-  // 			});
-  // 		},
-  // 	}),
-  // );
+  useEffect(() => {
+    if (isOpen) {
+      nameInputRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  const router = useRouter();
+  const trpc = api.useUtils();
+  const { mutate: createCollection } = api.collection.create.useMutation({
+    onSuccess: async (data) => {
+      void trpc.collection.invalidate();
+      close();
+      setName("");
+      router.push(`/${data.id}`);
+    },
+  });
   const handleCreateCollection = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim() === "") {
       return;
     }
-    // createCollection({ name });
+    createCollection({ name });
   };
 
   return (
     <Modal isOpen={isOpen} close={close}>
       <form
         onSubmit={handleCreateCollection}
-        className="bg-foreground flex h-full w-full flex-col rounded-lg text-white"
+        className="bg-foreground flex min-w-[400px] flex-col rounded-lg text-white"
       >
         <div className="flex items-center justify-between border-b border-b-white/30 px-4 py-1">
           <h4>Add collection</h4>
@@ -153,6 +172,7 @@ const AddCollectionModal = ({
         </div>
         <div className="flex flex-1 flex-col gap-2 p-2">
           <input
+            ref={nameInputRef}
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}

@@ -2,22 +2,36 @@
 
 import { startOfDay } from "date-fns";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaAngleDown, FaTrash } from "react-icons/fa";
 import { FaEllipsisVertical, FaPlus } from "react-icons/fa6";
 import { api } from "~/trpc/react";
 import type { SectionDetailType } from "~/trpc/types";
 import { isPermanentSection } from "~/utils/section";
 import PopupMenu from "../../ui/popupMenu";
+import AddSectionCard from "./AddSectionCard";
 import AddTaskCard from "./task/AddTaskCard";
 import TaskCard from "./task/TaskCard";
-import AddSectionCard from "./AddSectionCard";
 
 export default function SectionCard({
   section,
 }: {
   section: SectionDetailType;
 }) {
+  // determine default due date
+  const [defaultDueDate, setDefaultDueDate] = useState<Date | null>(null);
+  const path = usePathname();
+  useEffect(() => {
+    if (path === "/today") {
+      setDefaultDueDate(startOfDay(new Date()));
+    } else if (path === "/upcoming") {
+      const dd = new Date(Number(section.id));
+      console.log(dd);
+      setDefaultDueDate(dd);
+    }
+  }, [path, section.id]);
+
   const trpc = api.useUtils();
   const { mutate: deleteSection } = api.section.delete.useMutation({
     onSuccess: () => {
@@ -93,7 +107,7 @@ export default function SectionCard({
                 <AddTaskCard
                   currentCollectionId={section.collectionId}
                   currentSectionId={section.id}
-                  defaultDueDate={startOfDay(new Date())}
+                  defaultDueDate={defaultDueDate}
                   dismiss={() => setIsAddTaskOpen((prev) => !prev)}
                 />
               ) : (
