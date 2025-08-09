@@ -90,11 +90,11 @@ export default function DatePicker({
               <span className="flex items-center gap-2">
                 {datePickerValue.icon}
                 {/* See why the split('at')...: https://github.com/date-fns/date-fns/issues/1218 */}
-                {capitalizeFirstLetter(
+                {/* {capitalizeFirstLetter(
                   formatRelative(datePickerValue.value, new Date()).split(
                     "at",
                   )[0],
-                )}
+                )} */}
                 <span
                   onClick={() => {
                     setDatePickerValue(null);

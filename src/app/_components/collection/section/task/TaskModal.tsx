@@ -165,9 +165,9 @@ export default function TaskModal({
     },
   });
   useEffect(() => {
-    if (task.children) {
-      setValues(task.children);
-    }
+    // if (task.children) {
+    //   setValues(task.children);
+    // }
   }, [task.children, setValues]);
 
   return (
