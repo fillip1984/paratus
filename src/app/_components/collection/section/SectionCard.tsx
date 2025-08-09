@@ -1,12 +1,15 @@
-import { FaEllipsisVertical, FaPlus } from "react-icons/fa6";
-import type { SectionDetailType } from "~/trpc/types";
-import PopupMenu from "../../ui/popupMenu";
-import { FaTrash } from "react-icons/fa";
-import { api } from "~/trpc/react";
-import { isPermanentSection } from "~/utils/section";
-import AddTaskCard from "./task/AddTaskCard";
-import { useState } from "react";
+"use client";
+
 import { startOfDay } from "date-fns";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
+import { FaAngleDown, FaTrash } from "react-icons/fa";
+import { FaEllipsisVertical, FaPlus } from "react-icons/fa6";
+import { api } from "~/trpc/react";
+import type { SectionDetailType } from "~/trpc/types";
+import { isPermanentSection } from "~/utils/section";
+import PopupMenu from "../../ui/popupMenu";
+import AddTaskCard from "./task/AddTaskCard";
 import TaskCard from "./task/TaskCard";
 
 export default function SectionCard({
@@ -22,11 +25,27 @@ export default function SectionCard({
   });
 
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isSectionCollapsed, setIsSectionCollapsed] = useState(false);
 
   return (
-    <div className="min-h-[200px] min-w-[400px] snap-start rounded border p-2">
-      <div className="flex items-center justify-between">
-        <p className="font-bold">{section.name}</p>
+    <div className="snap-start p-2">
+      <div className="flex items-center justify-between border-b py-2">
+        {/* leading */}
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setIsSectionCollapsed((prev) => !prev)}
+            className={`transition-transform duration-200 ${
+              isSectionCollapsed ? "-rotate-90" : ""
+            }`}
+          >
+            <FaAngleDown />
+          </button>
+          <p className="font-bold">{section.name}</p>
+        </div>
+        {/* center */}
+
+        {/* trailing */}
         {!isPermanentSection(section.name) && (
           <PopupMenu
             button={
@@ -52,33 +71,43 @@ export default function SectionCard({
         )}
       </div>
       {/* Add tasks or other content here */}
-      <>
-        {section.tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            collectionId={section.collectionId}
-          />
-        ))}
-      </>
-      <>
-        {isAddTaskOpen ? (
-          <AddTaskCard
-            currentCollectionId={section.collectionId}
-            currentSectionId={section.id}
-            defaultDueDate={startOfDay(new Date())}
-            dismiss={() => setIsAddTaskOpen((prev) => !prev)}
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setIsAddTaskOpen((prev) => !prev)}
-            className="flex items-center gap-2 rounded p-1 font-thin hover:bg-white/10"
+      <AnimatePresence initial={false}>
+        {!isSectionCollapsed && (
+          <motion.div
+            animate={{ opacity: 1, height: "auto" }}
+            initial={{ opacity: 0.2, height: 0.2 }}
+            exit={{ opacity: 0, height: 0 }}
           >
-            <FaPlus className="text-primary" /> Add task
-          </button>
+            <div>
+              {section.tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  collectionId={section.collectionId}
+                />
+              ))}
+            </div>
+            <div>
+              {isAddTaskOpen ? (
+                <AddTaskCard
+                  currentCollectionId={section.collectionId}
+                  currentSectionId={section.id}
+                  defaultDueDate={startOfDay(new Date())}
+                  dismiss={() => setIsAddTaskOpen((prev) => !prev)}
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsAddTaskOpen((prev) => !prev)}
+                  className="flex items-center gap-2 rounded p-1 font-thin hover:bg-white/10"
+                >
+                  <FaPlus className="text-primary" /> Add task
+                </button>
+              )}
+            </div>
+          </motion.div>
         )}
-      </>
+      </AnimatePresence>
     </div>
   );
 }
