@@ -7,8 +7,9 @@
   /* disable out of box colors */
   --color-\*: initial;
 
-  --color-primary: #0070f3;
-  --color-secondary: #1c1c1e;
+  /* --color-primary: #0070f3; */
+  --color-primary: #8da770;
+  --color-secondary: #eaefd3;
   --color-accent: #f5f5f5;
 
   --color-background: #101122;

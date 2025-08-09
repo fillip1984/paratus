@@ -11,6 +11,7 @@ import { isPermanentSection } from "~/utils/section";
 import PopupMenu from "../../ui/popupMenu";
 import AddTaskCard from "./task/AddTaskCard";
 import TaskCard from "./task/TaskCard";
+import AddSectionCard from "./AddSectionCard";
 
 export default function SectionCard({
   section,
@@ -108,6 +109,10 @@ export default function SectionCard({
           </motion.div>
         )}
       </AnimatePresence>
+      <AddSectionCard
+        collectionId={section.collectionId}
+        addAfter={section.position}
+      />
     </div>
   );
 }

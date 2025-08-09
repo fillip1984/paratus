@@ -78,6 +78,7 @@ export default function DatePicker({
     setDatePickerValue(date);
     setValue(date.value);
   };
+
   return (
     <div className="flex gap-2">
       <PopupMenu
@@ -90,11 +91,11 @@ export default function DatePicker({
               <span className="flex items-center gap-2">
                 {datePickerValue.icon}
                 {/* See why the split('at')...: https://github.com/date-fns/date-fns/issues/1218 */}
-                {/* {capitalizeFirstLetter(
+                {capitalizeFirstLetter(
                   formatRelative(datePickerValue.value, new Date()).split(
                     "at",
-                  )[0],
-                )} */}
+                  )[0] ?? "",
+                )}
                 <span
                   onClick={() => {
                     setDatePickerValue(null);
@@ -114,7 +115,7 @@ export default function DatePicker({
           </button>
         }
         content={
-          <div className="m-2 flex flex-col gap-1">
+          <div className="bg-foreground m-2 flex flex-col gap-1 rounded-lg p-2">
             <input type="text" placeholder="Type a date..." />
             <div className="flex flex-col">
               {quickDateOptions
@@ -128,7 +129,7 @@ export default function DatePicker({
                     key={d.value.toString()}
                     type="button"
                     onClick={() => handleUpdate(d)}
-                    className="hover:bg-accent1/50 flex items-center gap-2 rounded p-1 text-xs"
+                    className="hover:bg-secondary/30 flex items-center gap-2 rounded p-1 text-xs"
                   >
                     {d.icon} {d.label}
                     <span className="ml-auto">

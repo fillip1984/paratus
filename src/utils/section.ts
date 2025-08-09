@@ -4,5 +4,9 @@
  * @returns
  */
 export const isPermanentSection = (sectionName: string): boolean => {
-  return sectionName === "Uncategorized" || sectionName === "Inbox";
+  return (
+    sectionName === "Uncategorized" ||
+    sectionName === "Inbox" ||
+    sectionName === "Overdue"
+  );
 };

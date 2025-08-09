@@ -88,13 +88,13 @@ export default function PriorityPicker({
         </button>
       }
       content={
-        <div className="flex w-[185px] flex-col gap-1 p-1">
+        <div className="bg-foreground flex w-[185px] flex-col gap-1 rounded-lg p-1">
           {priorities.map((p) => (
             <button
               key={p.value}
               type="button"
               onClick={() => handleUpdate(p)}
-              className="hover:bg-accent1/50 flex items-center gap-2 rounded p-2 text-xs"
+              className="hover:bg-secondary/30 flex items-center gap-2 rounded p-2 text-xs"
             >
               {p.icon} {p.label}
             </button>

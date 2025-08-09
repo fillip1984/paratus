@@ -57,7 +57,7 @@ export default function SideNav() {
           <Link
             key={item.to}
             href={item.to}
-            className={` ${path.startsWith(item.to) ? "bg-primary font-semibold" : "hover:bg-background/60"} mx-2 flex items-center rounded-xl p-2 transition duration-200 select-none`}
+            className={` ${path.startsWith(item.to) ? "bg-background text-primary font-semibold" : "hover:bg-background/60"} mx-2 flex items-center rounded-xl p-2 transition duration-200 select-none`}
           >
             <item.icon className="mr-2" />
             {item.label}
